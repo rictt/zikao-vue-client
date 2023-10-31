@@ -9,9 +9,9 @@ export const getCourseList = (queries = {}) => {
 }
 
 export const getExamListByCourseId = (courseId) => {
-  return http.get('/exam/course/' + courseId)
+  return http.post('/course/' + courseId + '/exam')
 }
 
 export const getQuestionListByExamId = (examId) => {
-  return http.get('/question/exam/' + examId)
+  return http.post('/exam/' + examId +'/question')
 }

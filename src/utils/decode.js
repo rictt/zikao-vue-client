@@ -1,3 +1,5 @@
+import { baseURL } from "../api/request";
+
 export function decodeCorrect(correct, questionId, index) {
   let o = correct;
   let i = index + questionId;
@@ -52,8 +54,10 @@ export function rand_ABCD_arr(e, t) {
 export function replaceImgUrl(str) {
   if (str && str.indexOf && str.indexOf('//img.chen666.top') !== -1) {
     const before = 'https://img.chen666.top/cnd/'
-    const after = 'http://localhost:3000/img?url=https:/img.chen666.top/cnb/'
-    return str.replace(before, after)
+    // const host = import.meta.env.MODE === 'production' ? 'http://119.91.143.19/api/img?url=' : 'http://localhost:3000/img?url='
+    const host = ''
+    const after = host + 'https:/img.chen666.top/cnb/'
+    return str.replace(new RegExp(before, 'g'), after)
   }
   return str
 }
@@ -141,6 +145,5 @@ export function questionChange(e) {
         n[s].type = 4
     }
   }
-  console.log(n)
   return n
 }

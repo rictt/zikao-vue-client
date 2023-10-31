@@ -7,6 +7,9 @@ import path from 'path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    outDir: 'zikao-vue-client',
+  },
   css: {
     postcss: {
       plugins: [

@@ -4,15 +4,16 @@ import { useRoute, useRouter } from 'vue-router';
 import { getExamListByCourseId } from '@/api';
 
 const state = reactive({
-  examList: []
+  examList: [],
+  courseDetail: {}
 })
-
+const route = useRoute()
 const getExamList = () => {
-  const route = useRoute()
   if (route.query.id) {
     getExamListByCourseId(route.query.id)
       .then(res => {
-        state.examList = res
+        state.courseDetail = res
+        state.examList = res.exam_list || []
       })
   }
 }
@@ -22,19 +23,26 @@ onMounted(() => {
 
 const router = useRouter()
 const goExam = (item) => {
-  console.log(item)
   router.push({
     name: 'Exam',
     query: {
-      id: item.id
+      id: item.id,
+      cid: item.course_id
     }
+  })
+}
+const goHome = () => {
+  router.push({
+    name: 'Home'
   })
 }
 </script>
 
 <template>
   <div>
-    <div class="py-2 px-4 rounded-md bg-white text-[#999] font-bold leading-[46px]">题库 - 历年真题 - 中国近现代史纲要</div>
+    <div class="py-2 px-4 rounded-md bg-white text-[#999] font-bold leading-[46px]">
+      <span class="cursor-pointer" @click="goHome">题库/历年真题</span>/{{ state.courseDetail.title || '-' }}
+    </div>
     <hr class="mb-[20px]">
     <div class="bg-[#f1f1f1] py-[10px] px-[20px] rounded-md overflow-hidden">
       <div 
