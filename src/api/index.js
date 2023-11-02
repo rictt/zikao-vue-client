@@ -15,3 +15,15 @@ export const getExamListByCourseId = (courseId) => {
 export const getQuestionListByExamId = (examId) => {
   return http.post('/exam/' + examId +'/question')
 }
+
+export const addCourseView = (examId) => {
+  return http.get('/course/' + examId +'/view')
+}
+
+export const getStat = () => {
+  return http.get('/stat')
+}
+
+export const addIndexPV = () => {
+  return http.get('/stat/index/pv')
+}

@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, reactive } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getExamListByCourseId } from '@/api';
+import { getExamListByCourseId, addCourseView } from '@/api';
 
 const state = reactive({
   examList: [],
@@ -14,6 +14,7 @@ const getExamList = () => {
       .then(res => {
         state.courseDetail = res
         state.examList = res.exam_list || []
+        addCourseView(route.query.id)
       })
   }
 }

@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, reactive, watch } from 'vue';
 import { router } from '../router';
-import { getCourseList } from '@/api';
+import { getCourseList, addIndexPV } from '@/api';
 
 const state = reactive({
   searchKey: '',
@@ -18,7 +18,6 @@ const state = reactive({
 })
 
 
-let index = 0
 const getRandomBgClass = (index) => {
   const list = [
     'bg-sky-500',
@@ -55,7 +54,6 @@ watch(() => state.searchKey, (value) => {
 })
 
 const fetchCourseList = (queries = {}) => {
-  index = 0
   state.loaded = false
   getCourseList(queries).then(res => {
     const { list } = res
@@ -66,6 +64,7 @@ const fetchCourseList = (queries = {}) => {
 
 onMounted(() => {
   fetchCourseList()
+  addIndexPV()
 })
 </script>
 
