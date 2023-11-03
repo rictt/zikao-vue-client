@@ -8,8 +8,10 @@ export default {
   theme: {
     extend: {
       colors: {
-        'primary': "#FEAC01",
-        'help': '#fbb116'
+        // 'primary': "#FEAC01",
+        // 'help': '#fbb116'
+        'primary': 'var(--el-color-primary)',
+        'help': 'var(--el-color-primary)'
       },
     },
   },

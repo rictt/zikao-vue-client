@@ -1,11 +1,11 @@
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { questionChange } from '../utils/decode'
 import { getQuestionListByExamId } from '../api';
 import { useRoute, useRouter } from 'vue-router';
-import { getItem, setItem, StorageUtil } from '@/utils/localstorage'
+import DraftBox from '@/components/DraftBox/index.vue'
+import QuestionItem from '@/components/Question/index.vue'
 
-const styleStoreUtil = new StorageUtil('DRAFT_STYLE', { x: 0, y: 0, visible: true })
 const router = useRouter()
 const route = useRoute()
 const state = reactive({
@@ -15,9 +15,16 @@ const state = reactive({
   questionList: [],
   step: 5,
   loading: false,
-  translateX: styleStoreUtil.getValue().x || 0,
-  translateY: styleStoreUtil.getValue().y || 0,
-  draftVisible: true
+  draftVisible: false,
+  mode: 1,
+  answerMode: 1,
+  stepMode: 1,
+  currentPageIndex: 1,
+  currentIndex: -1
+})
+
+watch(() => state.currentPageIndex, (value) => {
+  state.currentIndex = value - 1
 })
 
 let timer = null
@@ -45,65 +52,17 @@ const listenerLastItem = () => {
   }, 200)
 }
 
-const draftBoxStyle = computed(() => {
-  return {
-    transform: `translate(${state.translateX}px, ${state.translateY}px)`
-  }
-})
-const draftBox = ref('draftBox')
-const listenerDraft = () => {
-  let _downed = false
-  let startX, startY, moveX, moveY, diffX, diffY = 0;
-  const onMouseDown = (e) => {
-    console.log(state.translateX, state.translateY)
-    _downed = true
-    startX = e.clientX - state.translateX
-    startY = e.clientY - state.translateY
-  }
-  const onMouseMove = (e) => {
-    if (!_downed) return
-    moveX = e.clientX
-    moveY = e.clientY
-    diffX = moveX - startX
-    diffY = moveY - startY
-    console.log(diffX, diffY)
-    state.translateX = diffX
-    state.translateY = diffY
-  }
-  const onMouseUp = (e) => {
-    _downed = false
-    styleStoreUtil.setValue({
-      x: diffX,
-      y: diffY,
-      visible: true
-    })
-  }
-  draftBox.value.addEventListener('mousedown', onMouseDown)
-  window.addEventListener('mousemove', onMouseMove)
-  draftBox.value.addEventListener('mouseup', onMouseUp)
-  return {
-    remove: () => {
-      draftBox.value.removeEventListener('mousedown', onMouseDown)
-      window.removeEventListener('mousemove', onMouseMove)
-      draftBox.value.removeEventListener('mouseup', onMouseUp)
-    }
-  }
-}
-
 onMounted(() => {
   const route = useRoute()
   if (route.query.id) {
     getQuestionList(route.query.id)
   }
-
   const onScroll = () => {
     listenerLastItem()
   }
-  const { remove } = listenerDraft()
   window.addEventListener('scroll', onScroll)
   return () => {
     window.removeEventListener('scroll', onScroll)
-    remove()
   }
 })
 
@@ -114,10 +73,10 @@ const getQuestionList = (id) => {
       const data = handleQuestion(res.question_list || [])
       state.courseDetail = res.course
       state.questionList = data;
+      state.currentIndex = 0;
       state.viewQuestionList = state.questionList.slice(0, state.viewQuestionList.length + 5)
     })
 }
-
 
 const handleQuestion = (data) => {
   const d = questionChange(data)
@@ -150,32 +109,76 @@ const goHome = () => {
   </div>
   <hr class="mb-[20px]">
 
-  <div class="px-10 py-2 leading-[2.25]">
-    <div class="question-item" v-for="(question, index) in state.viewQuestionList" :key="question.id">
-      <div class="font-bold flex" v-html="`${index + 1}.${question.title}`"></div>
-      <div class="text-primary" v-if="question.type == '4'" v-html="question.analyse">
+  <div title="设置" class="px-10">
+    <div class="border shadow-sm px-2 py-2 rounded-sm">
+      <div class="flex items-center text-sm font-bold">
+        <div>试卷展示：</div>
+        <el-radio-group v-model="state.mode">
+          <el-radio :label="1">一页一题</el-radio>
+          <el-radio :label="2">展示所有题目</el-radio>
+        </el-radio-group>
       </div>
-      <div v-if="question.type != '4' && question.choseList" class="flex flex-col text-md leading-[2] pl-4">
-        <div class="flex items-center" v-for="(op, opIndex) in question.choseList"
-          :class="question.answerArr && question.answerArr.includes(['A', 'B', 'C', 'D', 'E', 'F'][opIndex]) ? 'text-primary' : ''">
-            <span class="pr-2">{{ ['A', 'B', 'C', 'D', 'E', 'F'][opIndex] }}.</span>
-            <span v-html="op.item"></span>
-          </div>
+      <div class="flex items-center text-sm font-bold">
+        <div>答题模式：</div>
+        <el-radio-group v-model="state.answerMode">
+          <el-radio :label="1">答题</el-radio>
+          <el-radio :label="2">背题（直接显示答案）</el-radio>
+        </el-radio-group>
+      </div>
+      <div class="flex items-center text-sm font-bold">
+        <div>自动跳转：</div>
+        <el-radio-group v-model="state.stepMode">
+          <el-radio :label="1">跳转下一题</el-radio>
+          <el-radio :label="2">停留原题</el-radio>
+        </el-radio-group>
       </div>
     </div>
-    <div :style="{ visibility: state.loading ? 'visible' : 'hidden' }" class="py-4 text-primary">加载中...</div>
   </div>
 
-  <div v-show="state.draftVisible" ref="draftBox" :style="draftBoxStyle" class="select-none fixed right-2 bottom-14 bg-white rounded-md border border-primary shadow-md min-w-[240px] md:min-w-[340px]">
-    <div class="relative text-center text-sm leading-[3] cursor-move font-bold">
-      草稿纸
-      <span class="absolute right-2 text-[#666] font-normal text-sm leading-[3] cursor-pointer" @click="state.draftVisible = false">关闭</span>
-    </div>
-    <hr />
-    <div class="py-1 border-none outline-none px-0.5">
-      <textarea :spellcheck="false" class="block w-full min-h-[200px] md:min-h-[260px] p-1 text-sm outline-none resize-none" placeholder="示例：&#10;1-15&#10;ABCDA&#10;BBDDA&#10;BBCDA"></textarea>
+  <div class="px-10 py-2 leading-[2.25]">
+    <template v-if="state.mode === 1 && state.questionList[state.currentIndex]">
+      <QuestionItem 
+        @next="() => {
+          if (state.stepMode === 1) {
+            state.currentIndex++
+            state.currentPageIndex++
+          }
+        }"
+        :key="state.currentIndex + 1" 
+        :question="state.questionList[state.currentIndex]" 
+        :index="state.currentIndex + 1"
+        :showAnswer="state.answerMode === 2">
+      </QuestionItem>
+
+    </template>
+    <template v-if="state.mode === 2">
+      <QuestionItem v-for="(question, index) in state.viewQuestionList" :key="index" :index="index + 1"
+        :question="question" :showAnswer="state.answerMode === 2">
+      </QuestionItem>
+      <div :style="{ visibility: state.loading ? 'visible' : 'hidden' }" class="py-4 text-primary">加载中...</div>
+    </template>
+
+    <div v-if="state.mode === 1" class="py-4 flex items-center">
+      <el-button class="mr-4" 
+        @click="() => {
+          state.currentIndex--
+          state.currentPageIndex--
+        }" :disabled="state.currentIndex === 0">
+        上一题
+      </el-button>
+      <el-pagination v-model:current-page="state.currentPageIndex" background layout="prev, pager, next"
+        :total="state.questionList.length * 10" />
+      <el-button type="primary" class="ml-4" :disabled="state.currentIndex + 1 >= state.questionList.length" 
+        @click="() => {
+          state.currentIndex++
+          state.currentPageIndex++
+        }">
+        下一题
+      </el-button>
     </div>
   </div>
+
+  <DraftBox v-model="state.draftVisible" />
 </template>
 
 <style lang="less" scoped></style>

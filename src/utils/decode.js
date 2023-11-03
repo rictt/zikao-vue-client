@@ -132,7 +132,10 @@ export function questionChange(e) {
         };
         var l = e[s].correct + "";
         l = l.split("");
-        for (var f = 0; f < l.length; f++) n[s].answerArr[f] = t[l[f]], n[s].answer += t[l[f]];
+        for (var f = 0; f < l.length; f++) {
+          n[s].answerArr[f] = t[l[f]];
+          n[s].answer += t[l[f]]
+        };
         n[s].picUrl = e[s].img;
         // n[s].type = "2";
         n[s].type = "3";

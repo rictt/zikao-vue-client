@@ -38,11 +38,11 @@ const goHome = () => {
 <template>
   <div class="min-w-[650px]">
     <div class="shadow-sm">
-      <div class="pc-container flex items-center justify-between">
+      <header class="pc-container flex items-center justify-between">
         <div class="logo flex items-center text-left cursor-pointer" @click="goHome">
           <img class="w-[60px] h-[60px]" src="./assets/image/logo_128x128.png" alt="">
           <div class="pl-3 font-serif">
-            <div class="text-lg font-bold text-black">全国高等自考</div>
+            <div class="text-lg font-bold text-black">自考365</div>
             <div class="text-black">刷题版</div>
           </div>
         </div>
@@ -58,7 +58,7 @@ const goHome = () => {
             <img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="自考365学习|交流群" title="自考365学习|交流群">资料｜反馈群
           </a>
         </div>
-      </div>
+      </header>
     </div>
     <div class="pc-container py-4">
       <RouterView v-slot="{ Component }">
