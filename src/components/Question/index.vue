@@ -44,13 +44,15 @@ const isUserAnswerError = computed(() => {
   return false
 })
 
+let timer = null
 const userAnswerChange = (value) => {
+  clearTimeout(timer)
   if (props.question.type == 3 && !props.question.userSubmit) {
     return
   }
   if (!isUserAnswerError.value) {
     console.log('emit')
-    return setTimeout(() => {
+    return timer = setTimeout(() => {
       emits('next')
     }, 1000)
   }
@@ -69,7 +71,7 @@ const showRightAnswer = computed(() => {
   if (props.question.type == '4') {
     return false
   }
-  if (props.question.showAnalyse) {
+  if (props.question.showAnalyse || props.showAnswer) {
     return true 
   }
   return props.question.showAnalyse || isUserAnswerError.value
@@ -87,7 +89,7 @@ const showRightAnswer = computed(() => {
         <div class="w-full" v-for="(op, opIndex) in question.choseList">
           <el-radio :class="{
             error: (selectionsIndexMap[question.userAnswer] === opIndex) && isUserAnswerError,
-            checked: (question.userAnswer || question.showAnalyse) && selectionsIndexMap[question.answerArr] === opIndex
+            checked: (showAnswer || question.userAnswer || question.showAnalyse) && selectionsIndexMap[question.answerArr] === opIndex
           }" :label="selections[opIndex]" checked>
             <span class="pr-2">{{ selections[opIndex] }}.</span>
             <span class="text-md" v-html="op.item"></span>
@@ -128,7 +130,7 @@ const showRightAnswer = computed(() => {
           <span>{{ userAnswerFormat(question.userAnswer) }}</span>
         </template>
       </div>
-      <template v-if="question.showAnalyse || isUserAnswerError">
+      <template v-if="question.showAnalyse || isUserAnswerError || showAnswer">
         <div class="w-full h-[20px]"></div>
         <div class="bg-[#f1f1f1] px-4 py-2 leading-[1.75] rounded-sm">
           <span class="font-bold">解析：</span>

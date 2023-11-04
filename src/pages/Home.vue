@@ -21,13 +21,13 @@ const state = reactive({
 const getRandomBgClass = (index) => {
   const list = [
     'bg-sky-500',
-    'bg-primary',
-    'bg-sky-300',
+    'bg-orange-400',
     'bg-lime-400',
     'bg-yellow-700',
     'bg-yellow-400',
     'bg-green-300',
     'bg-teal-300',
+    'bg-sky-300',
     'bg-indigo-400',
     'bg-purple-400',
     'bg-pink-400',
