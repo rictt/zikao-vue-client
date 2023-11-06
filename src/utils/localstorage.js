@@ -30,4 +30,16 @@ export class StorageUtil {
   setValue(value) {
     return setItem(this.key, value)
   }
+
+  merge(value) {
+    const oldValue = this.getValue()
+    const newValue = Object.assign({}, oldValue, value)
+    return this.setValue(newValue)
+  }
+
+  remove() {
+    localStorage.removeItem(this.key)
+  }
 }
+
+export const answerStorage = new StorageUtil('USER_ANSWER')

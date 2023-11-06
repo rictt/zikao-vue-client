@@ -7,6 +7,7 @@ import DraftBox from '@/components/DraftBox/index.vue'
 import QuestionItem from '@/components/Question/index.vue'
 import { copyText2Clipboard } from '@/utils/clipboard'
 import { ElMessage } from 'element-plus';
+import { answerStorage } from '@/utils/localStorage'
 
 const router = useRouter()
 const route = useRoute()
@@ -27,6 +28,7 @@ const state = reactive({
 
 watch(() => state.currentPageIndex, (value) => {
   state.currentIndex = value - 1
+  answerStorage.setValue({ index: state.currentIndex })
 })
 
 let timer = null
@@ -54,10 +56,23 @@ const listenerLastItem = () => {
   }, 200)
 }
 
-onMounted(() => {
+onMounted(async () => {
   const route = useRoute()
-  if (route.query.id) {
-    getQuestionList(route.query.id)
+  if (!route.query.id) {
+    return
+  }
+  await getQuestionList(route.query.id)
+  const answerRecord = answerStorage.getValue()
+  if (answerRecord?.index) {
+    openConfirm({
+      title: '提示',
+      content: '是否继续上次答题记录？',
+      type: 'info',
+      confirmButtonText: '确 认',
+      cancelButtonText: '取 消'
+    }).then(() => {
+      state.currentIndex = answerRecord.index
+    })
   }
   const onScroll = () => {
     listenerLastItem()
@@ -68,16 +83,30 @@ onMounted(() => {
   }
 })
 
+const openConfirm = (params) => {
+  const { content, title, confirmButtonText, cancelButtonText, type } = params
+  return ElMessageBox.confirm(content, title, {
+    confirmButtonText,
+    cancelButtonText,
+    type,
+  })
+}
+
 const getQuestionList = (id) => {
-  getQuestionListByExamId(id)
-    .then(res => {
-      state.examDetail = res
-      const data = handleQuestion(res.question_list || [])
-      state.courseDetail = res.course
-      state.questionList = data;
-      state.currentIndex = 0;
-      state.viewQuestionList = state.questionList.slice(0, state.viewQuestionList.length + 5)
-    })
+  return new Promise((resolve, reject) => {
+    getQuestionListByExamId(id)
+      .then(res => {
+        state.examDetail = res
+        const data = handleQuestion(res.question_list || [])
+        state.courseDetail = res.course
+        state.questionList = data;
+        state.currentIndex = 0;
+        state.viewQuestionList = state.questionList.slice(0, state.viewQuestionList.length + 5)
+      })
+      .finally(() => {
+        resolve()
+      })
+  })
 }
 
 const handleQuestion = (data) => {
