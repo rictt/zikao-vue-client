@@ -7,10 +7,12 @@ import DraftBox from '@/components/DraftBox/index.vue'
 import QuestionItem from '@/components/Question/index.vue'
 import { copyText2Clipboard } from '@/utils/clipboard'
 import { ElMessage } from 'element-plus';
-import { answerStorage } from '@/utils/localStorage'
+import { StorageUtil } from '@/utils/localStorage'
 
 const router = useRouter()
 const route = useRoute()
+const answerStorage = new StorageUtil('USER_ANSWER_' + route.query.id)
+console.log(answerStorage)
 const state = reactive({
   courseDetail: {},
   examDetail: {},
