@@ -1,6 +1,6 @@
 <script setup>
 import { watch, ref, computed, reactive, onMounted } from 'vue';
-import { StorageUtil } from '@/utils/localstorage'
+import { StorageUtil } from '@/utils/localStorage'
 
 const styleStoreUtil = new StorageUtil('DRAFT_STYLE', { x: 0, y: 0, visible: true })
 const props = defineProps({
