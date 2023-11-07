@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { ElMessage } from 'element-plus'
 
 // export const baseURL = process.env.NODE_ENV === 'production' ? 'https://xxx' : '/api'
 export const baseURL = import.meta.env.MODE === 'production' ? 'http://119.91.143.19/api' : '/api'
@@ -17,6 +18,9 @@ instance.interceptors.response.use(function onResolve(response) {
   }
   return response;
 }, function (error) {
+  if (error?.response?.data?.code === 403) {
+    ElMessage.error('环境异常，请联系管理员处理')
+  }
   return Promise.reject(error)
 })
 
