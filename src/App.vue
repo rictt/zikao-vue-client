@@ -10,7 +10,7 @@ const state = reactive({
     },
     {
       name: 'About',
-      label: '关于我们',
+      label: '关于本站',
     },
   ]
 })
@@ -61,7 +61,7 @@ const goHome = () => {
         </div>
       </header>
     </div>
-    <div class="pc-container py-4 min-h-[70vh]">
+    <div class="pc-container py-4 min-h-[80vh]">
       <RouterView v-slot="{ Component }">
         <KeepAlive :include="['Home']">
           <component :is="Component" />
@@ -69,7 +69,7 @@ const goHome = () => {
       </RouterView>
     </div>
   </div>
-  <div class="py-[10px] w-full fixed text-center bottom-0">
+  <div class="py-[10px] w-full text-center bottom-0">
     <footer class="text-center py-[4px]">
       <a href="https://beian.miit.gov.cn/" target="_blank">ICP备案号：</a>
       <a href="https://beian.miit.gov.cn/" target="_blank">粤ICP备2023128276号</a>
