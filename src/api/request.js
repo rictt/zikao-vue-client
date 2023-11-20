@@ -2,7 +2,8 @@ import axios from 'axios'
 import { ElMessage } from 'element-plus'
 
 // export const baseURL = process.env.NODE_ENV === 'production' ? 'https://xxx' : '/api'
-export const baseURL = import.meta.env.MODE === 'production' ? 'http://119.91.143.19/api' : '/api'
+// export const baseURL = import.meta.env.MODE === 'production' ? 'http://119.91.143.19/api' : '/api'
+export const baseURL = import.meta.env.MODE === 'production' ? 'https://zikao365.online/api' : '/api'
 // console.log("import.meta.env: ", import.meta.env)
 const instance = axios.create({
   timeout: 100000,

@@ -55,6 +55,7 @@ export function replaceImgUrl(str) {
   if (str && str.indexOf && str.indexOf('//img.chen666.top') !== -1) {
     const before = 'https://img.chen666.top/cnd/'
     // const host = import.meta.env.MODE === 'production' ? 'http://119.91.143.19/api/img?url=' : 'http://localhost:3000/img?url='
+    // const host = import.meta.env.MODE === 'production' ? 'https://zikao365.online/api/img?url=' : 'http://localhost:3000/img?url='
     const host = ''
     const after = host + 'https:/img.chen666.top/cnb/'
     return str.replace(new RegExp(before, 'g'), after)
