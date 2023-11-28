@@ -87,10 +87,15 @@ const showRightAnswer = computed(() => {
     <div v-if="['1', '2', '3', 1, 2, 3].includes(question.type) && question.choseList" class="flex flex-col text-md leading-[2] py-2">
       <el-radio-group v-if="question.type == 1 || question.type == 2" v-model="question.userAnswer" @change="userAnswerChange">
         <div class="w-full" v-for="(op, opIndex) in question.choseList">
-          <el-radio :class="{
-            error: (selectionsIndexMap[question.userAnswer] === opIndex) && isUserAnswerError,
-            checked: (showAnswer || question.userAnswer || question.showAnalyse) && selectionsIndexMap[question.answerArr] === opIndex
-          }" :label="selections[opIndex]" checked>
+          <el-radio 
+            style="height: auto !important;"
+            :class="{
+              error: (selectionsIndexMap[question.userAnswer] === opIndex) && isUserAnswerError,
+              checked: (showAnswer || question.userAnswer || question.showAnalyse) && selectionsIndexMap[question.answerArr] === opIndex
+            }" 
+            :label="selections[opIndex]" 
+            checked
+          >
             <span class="pr-2">{{ selections[opIndex] }}.</span>
             <span class="text-md" v-html="op.item"></span>
           </el-radio>
@@ -141,6 +146,10 @@ const showRightAnswer = computed(() => {
 </template>
 
 <style lang="less" scoped>
+:deep(.el-radio__label) {
+  display: inline-flex;
+  align-items: center;
+}
 :deep(.el-radio.error) {
   .el-radio__inner {
     border-color: red;
